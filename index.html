@@ -1,0 +1,382 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<title>Wordsworth</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,500;0,600;1,500&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+
+<style>
+  :root{
+    --ground:#F4F6F9; --surface:#FFFFFF; --surface-2:#EEF1F6;
+    --ink:#15191F; --muted:#596373; --faint:#8A93A2; --line:#DCE1EA;
+    --indigo:#33406B; --indigo-soft:#5A6796;
+    --token-bg:#E7EBF2; --token-ink:#5A6474;
+    --brass:#A9781E; --brass-deep:#835A12;
+    --reveal-bg:#F8EFD8; --reveal-ink:#6E4E13; --reveal-line:#E3CE97;
+    --revoked:#A23A34;
+    --shadow:0 1px 2px rgba(20,25,35,.05), 0 8px 28px -18px rgba(20,25,35,.28);
+    --radius:12px;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --ground:#0D1016; --surface:#161B23; --surface-2:#1C222C;
+      --ink:#E7EAF0; --muted:#98A2B2; --faint:#6C7686; --line:#28303C;
+      --indigo:#8493CE; --indigo-soft:#69769F;
+      --token-bg:#1F2732; --token-ink:#9AA6B6;
+      --brass:#D8A845; --brass-deep:#E9C77A;
+      --reveal-bg:#2B2413; --reveal-ink:#EBCB80; --reveal-line:#5A4A22;
+      --revoked:#E08A82;
+      --shadow:0 1px 2px rgba(0,0,0,.4), 0 12px 34px -20px rgba(0,0,0,.75);
+    }
+  }
+  :root[data-theme="dark"]{
+    --ground:#0D1016; --surface:#161B23; --surface-2:#1C222C;
+    --ink:#E7EAF0; --muted:#98A2B2; --faint:#6C7686; --line:#28303C;
+    --indigo:#8493CE; --indigo-soft:#69769F;
+    --token-bg:#1F2732; --token-ink:#9AA6B6;
+    --brass:#D8A845; --brass-deep:#E9C77A;
+    --reveal-bg:#2B2413; --reveal-ink:#EBCB80; --reveal-line:#5A4A22;
+    --revoked:#E08A82;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 12px 34px -20px rgba(0,0,0,.75);
+  }
+
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{margin:0; background:var(--ground); color:var(--ink);
+    font-family:"Public Sans", ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    line-height:1.6; -webkit-font-smoothing:antialiased}
+  .wrap{max-width:960px; margin:0 auto; padding:clamp(28px,5vw,72px) clamp(18px,4vw,32px)}
+  code{font-family:"IBM Plex Mono",monospace; font-size:.86em}
+
+  .eyebrow{font-size:.74rem; letter-spacing:.16em; text-transform:uppercase; color:var(--brass-deep); font-weight:700; margin:0 0 14px}
+  h1{font-family:"Spectral", Georgia, serif; font-weight:600; font-size:clamp(2.3rem,6vw,3.6rem); line-height:1.04; letter-spacing:-.01em; text-wrap:balance; margin:0 0 .5em}
+  h1 .mark{color:var(--brass)}
+  .lede{font-size:clamp(1.06rem,2.4vw,1.28rem); color:var(--muted); max-width:60ch; margin:0}
+  .lede b{color:var(--ink); font-weight:600}
+
+  section{margin-top:clamp(40px,7vw,72px)}
+  h2{font-family:"Spectral", Georgia, serif; font-weight:600; font-size:1.55rem; letter-spacing:-.01em; margin:0 0 6px}
+  h2 .step-n{font-family:"IBM Plex Mono",monospace; font-size:.85rem; color:var(--brass); font-weight:500; margin-right:10px; vertical-align:.12em}
+  .sub{color:var(--muted); margin:0 0 22px; max-width:66ch}
+
+  .flow{display:flex; flex-wrap:wrap; gap:8px}
+  .step{flex:1 1 130px; background:var(--surface); border:1px solid var(--line); border-radius:10px; padding:13px 15px}
+  .step .n{font-family:"IBM Plex Mono",monospace; font-size:.7rem; color:var(--faint)}
+  .step .t{font-weight:600; margin-top:2px}
+  .step .d{font-size:.82rem; color:var(--muted); margin-top:3px; line-height:1.4}
+  .step.key{border-color:var(--reveal-line)} .step.key .t{color:var(--brass-deep)}
+
+  .card{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow)}
+  .panel-head{display:flex; align-items:center; gap:8px; padding:12px 16px; border-bottom:1px solid var(--line); background:var(--surface-2)}
+  .panel-head .dot{width:9px;height:9px;border-radius:50%;background:var(--indigo-soft);opacity:.5}
+  .panel-head h3{margin:0; font-size:.8rem; font-weight:700; letter-spacing:.04em; text-transform:uppercase; color:var(--muted)}
+  .panel-head .badge{margin-left:auto; font-family:"IBM Plex Mono",monospace; font-size:.68rem; color:var(--faint)}
+
+  /* search */
+  .searchbar{display:flex; gap:8px; margin-bottom:8px}
+  .searchbar input{flex:1; font:inherit; font-size:.95rem; padding:11px 14px; border:1px solid var(--line); border-radius:10px; background:var(--surface); color:var(--ink)}
+  .searchbar input:focus-visible{outline:2px solid var(--brass); outline-offset:1px; border-color:var(--brass)}
+  .chips{display:flex; flex-wrap:wrap; gap:6px; margin-bottom:14px}
+  .chip{font:inherit; font-size:.76rem; padding:4px 10px; border:1px solid var(--line); border-radius:999px; background:var(--surface); color:var(--muted); cursor:pointer}
+  .chip:hover{border-color:var(--indigo-soft); color:var(--ink)}
+  .results{display:flex; flex-direction:column; gap:8px; list-style:none; margin:0; padding:0}
+  .result{display:flex; gap:14px; align-items:flex-start; width:100%; text-align:left; font:inherit; cursor:pointer;
+    background:var(--surface); border:1px solid var(--line); border-radius:10px; padding:13px 15px; color:var(--ink); transition:border-color .15s, background .15s}
+  .result:hover{border-color:var(--indigo-soft)}
+  .result:focus-visible{outline:2px solid var(--brass); outline-offset:2px}
+  .result.active{border-color:var(--reveal-line); background:var(--reveal-bg)}
+  .result .rank{font-family:"IBM Plex Mono",monospace; font-size:.9rem; color:var(--brass-deep); font-weight:500; min-width:1.4em; text-align:right}
+  .result .body{flex:1; min-width:0}
+  .result .title{font-weight:600; font-size:.95rem}
+  .result .snip{font-family:"IBM Plex Mono",monospace; font-size:.74rem; color:var(--muted); margin-top:3px; line-height:1.5; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+  .result .score{font-family:"IBM Plex Mono",monospace; font-size:.72rem; color:var(--faint); font-variant-numeric:tabular-nums}
+  .nohit{color:var(--faint); font-style:italic; padding:8px 2px; font-size:.86rem}
+
+  /* console */
+  .console{display:grid; grid-template-columns:1.4fr .92fr; gap:18px; margin-top:16px}
+  @media (max-width:770px){.console{grid-template-columns:1fr}}
+  .doc{font-family:"IBM Plex Mono", ui-monospace, monospace; font-size:.83rem; line-height:1.85; padding:16px 18px 20px; white-space:pre-wrap; word-break:break-word; margin:0}
+  .field{color:var(--indigo-soft)}
+  .tok{font-family:"IBM Plex Mono",monospace; font-size:.8rem; background:var(--token-bg); color:var(--token-ink);
+    border:1px solid transparent; border-radius:5px; padding:1px 5px; transition:background .25s, color .25s, border-color .25s}
+  @media (prefers-reduced-motion:reduce){.tok{transition:none}}
+  .tok.revealed{background:var(--reveal-bg); color:var(--reveal-ink); border-color:var(--reveal-line); font-weight:500}
+
+  .rail{display:flex; flex-direction:column; gap:14px}
+  .card.pad{padding:16px}
+  .card h4{margin:0 0 3px; font-size:.8rem; font-weight:700; letter-spacing:.04em; text-transform:uppercase; color:var(--muted)}
+  .card .hint{font-size:.8rem; color:var(--muted); margin:0 0 12px}
+  .depts{display:grid; grid-template-columns:1fr 1fr; gap:7px}
+  .dept{font:inherit; text-align:left; cursor:pointer; padding:9px 11px; border:1px solid var(--line); border-radius:9px; background:var(--ground); color:var(--ink); transition:border-color .15s, background .15s}
+  .dept:hover{border-color:var(--indigo-soft)}
+  .dept:focus-visible{outline:2px solid var(--brass); outline-offset:2px}
+  .dept[aria-pressed="true"]{border-color:var(--brass); background:var(--reveal-bg)}
+  .dept .name{font-weight:600; font-size:.86rem; display:flex; align-items:center; gap:6px}
+  .dept .cnt{font-family:"IBM Plex Mono",monospace; font-size:.68rem; color:var(--faint); margin-top:2px}
+  .dept[aria-pressed="true"] .cnt{color:var(--brass-deep)}
+
+  .ring{display:flex; flex-wrap:wrap; gap:5px; margin-top:12px}
+  .kk{font-family:"IBM Plex Mono",monospace; font-size:.68rem; padding:2px 7px; border-radius:5px; border:1px solid var(--line); color:var(--token-ink); background:var(--token-bg)}
+  .kk.on{background:var(--reveal-bg); color:var(--reveal-ink); border-color:var(--reveal-line)}
+  .kk .lk{opacity:.6; margin-right:3px}
+
+  .audit .log{font-family:"IBM Plex Mono",monospace; font-size:.72rem; line-height:1.5; margin:0; padding:0; list-style:none; display:flex; flex-direction:column; gap:6px; max-height:190px; overflow-y:auto}
+  .audit .log li{color:var(--muted); border-left:2px solid var(--line); padding:2px 0 2px 9px}
+  .audit .log li .k{color:var(--indigo)}
+  .audit .log li.reveal{border-left-color:var(--brass); color:var(--ink)} .audit .log li.reveal .k{color:var(--brass-deep)}
+  .audit .log li.revoke{border-left-color:var(--revoked)}
+  .audit .empty{color:var(--faint); font-style:italic}
+  .noleak{font-size:.72rem; color:var(--faint); margin:10px 0 0; display:flex; gap:6px; align-items:baseline}
+
+  .props{display:grid; grid-template-columns:repeat(auto-fit,minmax(215px,1fr)); gap:14px}
+  .prop{background:var(--surface); border:1px solid var(--line); border-radius:11px; padding:16px 17px}
+  .prop .h{font-weight:700; font-size:.95rem; margin:0 0 4px; display:flex; align-items:center; gap:8px}
+  .prop .h .i{color:var(--brass)}
+  .prop p{margin:0; font-size:.86rem; color:var(--muted); line-height:1.5}
+
+  footer{margin-top:clamp(48px,8vw,84px); padding-top:22px; border-top:1px solid var(--line); font-size:.8rem; color:var(--faint); display:flex; flex-wrap:wrap; gap:6px 18px}
+  footer b{color:var(--muted); font-weight:600}
+  .disc{margin-top:14px; font-size:.75rem; color:var(--faint); max-width:72ch}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <p class="eyebrow">Soevereine PII-pijplijn · Woo-documenten</p>
+    <h1>Doorzoekbaar zonder<br>de <span class="mark">privacy</span> prijs te geven.</h1>
+    <p class="lede">Wordsworth maakt van overheidsdocumenten een doorzoekbaar corpus waarin
+    <b>nooit klare persoonsgegevens</b> in de index staan. Zoeken gebeurt over pseudoniemen; onthullen
+    kan achteraf — <b>per afdeling</b>, met een eigen sleutelbos, intrekbaar en geaudit.</p>
+  </header>
+
+  <section aria-labelledby="flow-h">
+    <h2 id="flow-h">De straat</h2>
+    <p class="sub">Elk document loopt één kant op. Alleen de gepseudonimiseerde vorm bereikt de index.</p>
+    <div class="flow">
+      <div class="step"><div class="n">01</div><div class="t">Ingest</div><div class="d">Binnen via de generieke <code>/ingest</code>, content-addressed opgeslagen.</div></div>
+      <div class="step"><div class="n">02</div><div class="t">Extract</div><div class="d">Tekst eruit; born-digital of OCR.</div></div>
+      <div class="step key"><div class="n">03</div><div class="t">Pseudonimiseer 🔑</div><div class="d">PII → <code>[TYPE:hash]</code>; origineel versleuteld weggeschreven.</div></div>
+      <div class="step"><div class="n">04</div><div class="t">Indexeer</div><div class="d">Alleen tokens de index in.</div></div>
+      <div class="step"><div class="n">05</div><div class="t">Zoek &amp; rank</div><div class="d">BM25 + semantisch, over pseudoniemen.</div></div>
+    </div>
+  </section>
+
+  <section aria-labelledby="rank-h">
+    <h2 id="rank-h"><span class="step-n">1</span>Zoeken &amp; rangschikken</h2>
+    <p class="sub">Zoek door het corpus. De ranking draait volledig over pseudoniemen — resultaten en snippets
+    bevatten geen klare PII. Kies een resultaat om het te openen.</p>
+    <div class="searchbar">
+      <input id="q" type="text" placeholder="Zoek in het corpus…" aria-label="Zoekterm" autocomplete="off">
+    </div>
+    <div class="chips" id="chips"></div>
+    <ul class="results" id="results"></ul>
+  </section>
+
+  <section aria-labelledby="con-h">
+    <h2 id="con-h"><span class="step-n">2</span>Reveal per afdeling</h2>
+    <p class="sub">Zelfde document, andere sleutelbos. Kies een afdeling: elk ziet precies de PII-types
+    waarvoor die de sleutel houdt — HR meer, Sales minder. Elke reveal landt in het audit-spoor.</p>
+
+    <div class="console">
+      <div class="card">
+        <div class="panel-head"><span class="dot"></span><h3 id="doctitle">Document · index-vorm</h3><span class="badge" id="docid">—</span></div>
+        <pre class="doc" id="doc"></pre>
+      </div>
+
+      <div class="rail">
+        <div class="card pad">
+          <h4>Bekijk als afdeling</h4>
+          <p class="hint">Elke afdeling houdt een andere set sleutels (grants).</p>
+          <div class="depts" id="depts"></div>
+          <div class="ring" id="ring" aria-label="Sleutelbos van de afdeling"></div>
+        </div>
+
+        <div class="card pad audit">
+          <h4>Audit-spoor</h4>
+          <p class="hint">Append-only: wie, welke afdeling, welke types — <b>nooit de waarde</b>.</p>
+          <ul class="log" id="log"><li class="empty">Nog geen toegang. Kies een afdeling.</li></ul>
+          <p class="noleak"><span>🛡️</span><span>Geen klare waarde verlaat ooit dit spoor of de index.</span></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="prop-h">
+    <h2 id="prop-h">Waarom dit soeverein is</h2>
+    <p class="sub">De staat houdt de sleutels — niet de cloud, niet de leverancier.</p>
+    <div class="props">
+      <div class="prop"><p class="h"><span class="i">◆</span>Rol-gebonden sleutels</p><p>Elke afdeling krijgt een grant voor precies de PII-types die ze nodig heeft. HR ziet BSN, Sales niet.</p></div>
+      <div class="prop"><p class="h"><span class="i">◆</span>Per-type versleuteld</p><p>Elke PII-soort onder een eigen sleutel; een grant deelt precies één set types.</p></div>
+      <div class="prop"><p class="h"><span class="i">◆</span>OpenBao-envelope</p><p>Datasleutels gewrapt door een KEK die OpenBao nooit verlaat. Auto-unseal, on-prem.</p></div>
+      <div class="prop"><p class="h"><span class="i">◆</span>Deelbaar &amp; intrekbaar</p><p>Grants geef je uit aan een afdeling en trek je in — direct, geaudit.</p></div>
+      <div class="prop"><p class="h"><span class="i">◆</span>Hash-chained audit</p><p>Elke reveal is een keten-geverifieerde toegang, met de beller — zonder de waarde.</p></div>
+      <div class="prop"><p class="h"><span class="i">◆</span>Geen cloud in het pad</p><p>Anonimiseren, sleutels en index draaien on-prem. EUPL-1.2, open tooling.</p></div>
+    </div>
+  </section>
+
+  <footer>
+    <span><b>Wordsworth</b> · soevereine PII-straat</span>
+    <span>Woo-corpus · on-prem</span>
+    <span>OpenBao · EUPL-1.2</span>
+  </footer>
+  <p class="disc">Interactieve demo met <b>synthetische</b> voorbeeldgegevens — geen echte persoonsgegevens.
+  Zoeken en reveal draaien hier lokaal in je browser om het mechanisme te tonen; de echte straat zoekt over
+  de index, gate't elke reveal op een afdelings-grant + sleutel, en logt de beller.</p>
+</div>
+
+<script>
+(function(){
+  const TYPE_LABELS={PERSON:"PERSON",BSN:"BSN",EMAIL:"EMAIL",LOCATION:"LOCATION",PHONE_NUMBER:"PHONE",DATE_TIME:"DATE",ORGANIZATION:"ORG"};
+  const ALLTYPES=["PERSON","BSN","EMAIL","PHONE_NUMBER","LOCATION","DATE_TIME","ORGANIZATION"];
+
+  // Departments = key rings. HR sees the most personal PII, Sales the least.
+  const DEPTS=[
+    {id:"HR",   name:"HR / Personeel",  types:["PERSON","BSN","EMAIL","PHONE_NUMBER","DATE_TIME"]},
+    {id:"JUR",  name:"Juridisch",       types:["PERSON","EMAIL","DATE_TIME","LOCATION","ORGANIZATION"]},
+    {id:"SALES",name:"Sales",           types:["ORGANIZATION","LOCATION"]},
+    {id:"NONE", name:"Geen grant",      types:[]}
+  ];
+
+  // Synthetic corpus (no real personal data). `search` holds only non-PII words
+  // (ranking runs over pseudonyms). `seg`: strings | {f} field | {t,v,h} token.
+  const CORPUS=[
+    {id:"8e6af034", title:"Woo-verzoek — noodopvang asielzoekers",
+     search:"woo verzoek noodopvang asielzoekers gemeente advies locatieonderzoek opvang",
+     seg:[
+       {f:"Van:      "},{t:"PERSON",v:"Jan Jansen",h:"a1b2c3d4"}," <",{t:"EMAIL",v:"j.jansen@voorbeeldgemeente.nl",h:"9f8e7d6c"},">\n",
+       {f:"Datum:    "},{t:"DATE_TIME",v:"3 maart 2024",h:"1a2b3c4d"},"\n",
+       {f:"Onderwerp: "},"Advies locatieonderzoek noodopvang\n\n",
+       "Namens verzoeker ",{t:"PERSON",v:"Pieter de Vries",h:"5e6f7a8b"}," (BSN ",{t:"BSN",v:"111222333",h:"c0ffee12"},
+       "),\nwoonachtig te ",{t:"LOCATION",v:"Zuiderdorp",h:"dead10ca"},", inzake de voorgenomen\n",
+       "noodopvang van asielzoekers. Advies opgesteld door ",{t:"ORGANIZATION",v:"Bureau Ruimte",h:"0ff1ce22"},".\n",
+       "Bereikbaar op ",{t:"PHONE_NUMBER",v:"06-12345678",h:"12ab34cd"},"."
+     ]},
+    {id:"b03214d2", title:"Aanvraag omgevingsvergunning — dakopbouw",
+     search:"aanvraag omgevingsvergunning dakopbouw bouw vergunning bezwaar welstand",
+     seg:[
+       {f:"Aanvrager: "},{t:"PERSON",v:"Fatima El Amrani",h:"77aa88bb"},"\n",
+       {f:"Datum:    "},{t:"DATE_TIME",v:"18 januari 2024",h:"33cc44dd"},"\n",
+       {f:"Onderwerp: "},"Omgevingsvergunning dakopbouw\n\n",
+       "Verzoek tot vergunning voor een dakopbouw te ",{t:"LOCATION",v:"Noorderkade 12",h:"aa11bb22"},".\n",
+       "Contact: ",{t:"EMAIL",v:"f.elamrani@voorbeeld.nl",h:"55ee66ff"},
+       ". Beoordeling door ",{t:"ORGANIZATION",v:"Welstandscommissie",h:"9900aabb"},"."
+     ]},
+    {id:"76921055", title:"Subsidiebeschikking — cultuurfonds 2024",
+     search:"subsidie beschikking cultuurfonds cultuur toekenning begroting festival",
+     seg:[
+       {f:"Aan:      "},{t:"ORGANIZATION",v:"Stichting Podiumkunsten",h:"cd12ef34"},"\n",
+       {f:"T.a.v.:   "},{t:"PERSON",v:"Sanne Bakker",h:"beef1234"}," <",{t:"EMAIL",v:"s.bakker@podium.nl",h:"1234beef"},">\n",
+       {f:"Datum:    "},{t:"DATE_TIME",v:"9 februari 2024",h:"56ab78cd"},"\n",
+       {f:"Onderwerp: "},"Toekenning subsidie cultuurfonds\n\n",
+       "De aanvraag voor het zomerfestival te ",{t:"LOCATION",v:"Zuiderdorp",h:"dead10ca"},
+       " is toegekend.\nVragen? Bel ",{t:"PHONE_NUMBER",v:"06-98765432",h:"efab0011"},"."
+     ]}
+  ];
+
+  let activeDoc=CORPUS[0], activeDept="NONE";
+  const $=id=>document.getElementById(id);
+
+  // ---------- ranking (over pseudonyms) ----------
+  function score(doc,terms){
+    const hay=(doc.title+" "+doc.search).toLowerCase();
+    let s=0; for(const t of terms){ if(!t) continue; let i=hay.indexOf(t); while(i>=0){ s+= (t.length>=4?2.4:1.3); i=hay.indexOf(t,i+t.length); } }
+    return s;
+  }
+  function tokLabel(seg){ return "["+seg.t+":"+seg.h+"]"; }
+  function plainSnippet(doc){ // index-form one-liner, tokens shown as tokens
+    let out=""; for(const s of doc.seg){ if(typeof s==="string") out+=s.replace(/\n/g," "); else if(s.f) out+=s.f; else out+=tokLabel(s); }
+    return out.replace(/\s+/g," ").trim();
+  }
+  function renderResults(query){
+    const terms=query.toLowerCase().split(/\s+/).filter(Boolean);
+    const ul=$("results"); ul.innerHTML="";
+    let docs=CORPUS.map(d=>({d,sc:terms.length?score(d,terms):1}));
+    if(terms.length) docs=docs.filter(x=>x.sc>0);
+    docs.sort((a,b)=>b.sc-a.sc);
+    if(!docs.length){ ul.innerHTML='<li class="nohit">Geen resultaten voor die term.</li>'; return; }
+    docs.forEach((x,i)=>{
+      const li=document.createElement("li");
+      const b=document.createElement("button"); b.className="result"+(x.d===activeDoc?" active":""); b.type="button";
+      b.innerHTML='<span class="rank">'+(i+1)+'</span>'+
+        '<span class="body"><span class="title">'+x.d.title+'</span>'+
+        '<span class="snip">'+plainSnippet(x.d).slice(0,88)+'…</span></span>'+
+        '<span class="score">'+(terms.length? x.sc.toFixed(1):"—")+'</span>';
+      b.addEventListener("click",()=>openDoc(x.d));
+      li.appendChild(b); ul.appendChild(li);
+    });
+  }
+
+  // ---------- reveal console ----------
+  function renderDoc(){
+    const allow=new Set((DEPTS.find(d=>d.id===activeDept)||{}).types||[]);
+    $("doctitle").textContent="Document · "+ (activeDept==="NONE"?"index-vorm":"gezien door "+ (DEPTS.find(d=>d.id===activeDept).name));
+    $("docid").textContent="doc "+activeDoc.id;
+    const el=$("doc"); el.innerHTML="";
+    for(const s of activeDoc.seg){
+      if(typeof s==="string"){ el.appendChild(document.createTextNode(s)); }
+      else if(s.f){ const e=document.createElement("span"); e.className="field"; e.textContent=s.f; el.appendChild(e); }
+      else{
+        const e=document.createElement("span"); e.className="tok"+(allow.has(s.t)?" revealed":"");
+        e.textContent= allow.has(s.t)? s.v : tokLabel(s); el.appendChild(e);
+      }
+    }
+    // key ring
+    const ring=$("ring"); ring.innerHTML="";
+    for(const t of ALLTYPES){
+      const on=allow.has(t);
+      const k=document.createElement("span"); k.className="kk"+(on?" on":"");
+      k.innerHTML='<span class="lk">'+(on?"🔓":"🔒")+'</span>'+TYPE_LABELS[t];
+      ring.appendChild(k);
+    }
+  }
+
+  // ---------- audit ----------
+  const stamp=()=>new Date().toTimeString().slice(0,8);
+  let logged=false;
+  function audit(kind,cls,detail){
+    const log=$("log"); if(!logged){ log.innerHTML=""; logged=true; }
+    const li=document.createElement("li"); li.className=cls;
+    li.innerHTML='<span class="k">'+kind+'</span> · <span style="color:var(--faint)">'+stamp()+'</span> · '+detail;
+    log.insertBefore(li, log.firstChild);
+  }
+
+  function setDept(id, btn){
+    activeDept=id;
+    document.querySelectorAll(".dept").forEach(b=>b.setAttribute("aria-pressed", b===btn?"true":"false"));
+    renderDoc();
+    const dep=DEPTS.find(d=>d.id===id);
+    if(id==="NONE"){ audit("access locked","revoke","afdeling=—  ·  0 types  ·  index-vorm"); }
+    else {
+      const ts=dep.types.map(t=>TYPE_LABELS[t]).join(", ")||"—";
+      audit("reveal","reveal","caller="+dep.name+"  ·  types=["+ts+"]  ·  no clear value logged");
+    }
+  }
+  function openDoc(doc){
+    activeDoc=doc;
+    // opening a fresh document starts locked (index-form)
+    renderResults($("q").value);
+    renderDoc();
+  }
+
+  // ---------- build ----------
+  const depEl=$("depts");
+  DEPTS.forEach(d=>{
+    const b=document.createElement("button"); b.className="dept"; b.type="button"; b.setAttribute("aria-pressed", d.id==="NONE"?"true":"false");
+    b.innerHTML='<span class="name">'+ (d.id==="NONE"?"":"🔑 ") + d.name+'</span><span class="cnt">'+ (d.types.length? d.types.length+" sleutels":"geen sleutels")+'</span>';
+    b.addEventListener("click",()=>setDept(d.id,b));
+    depEl.appendChild(b);
+  });
+  const SUGG=["noodopvang","vergunning","subsidie","Zuiderdorp"];
+  const chipEl=$("chips");
+  SUGG.forEach(term=>{ const c=document.createElement("button"); c.className="chip"; c.type="button"; c.textContent=term;
+    c.addEventListener("click",()=>{ $("q").value=term; renderResults(term); }); chipEl.appendChild(c); });
+  $("q").addEventListener("input",e=>renderResults(e.target.value));
+
+  renderResults(""); renderDoc();
+})();
+</script>
+</body>
+</html>
