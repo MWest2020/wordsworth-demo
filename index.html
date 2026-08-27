@@ -105,6 +105,9 @@
   .stack li{font-size:.88rem;color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 13px}
   .stack li b{color:var(--ink);font-weight:600}
   .deeper{color:var(--faint);font-size:.86rem;font-style:italic;margin:4px 0 0}
+  .sovereign{padding:18px 20px;border-left:3px solid var(--brass)}
+  .sovereign .eyebrow{margin:0 0 8px}
+  .sovereign p:last-child{margin:0;max-width:64ch}
 
 
   .flow{display:flex; flex-wrap:wrap; gap:8px}
@@ -224,7 +227,7 @@
     <div class="flow">
       <div class="step"><div class="n">01</div><div class="t">Ingest</div><div class="d">Binnen via de generieke <code>/ingest</code>, content-addressed opgeslagen.</div></div>
       <div class="step"><div class="n">02</div><div class="t">Extract</div><div class="d">Tekst eruit; born-digital of OCR.</div></div>
-      <div class="step key"><div class="n">03</div><div class="t">Pseudonimiseer 🔑</div><div class="d">PII → <code>[TYPE:hash]</code>; origineel versleuteld weggeschreven.</div></div>
+      <div class="step key"><div class="n">03</div><div class="t">Pseudonimiseer 🔑</div><div class="d">PII → leesbaar pseudoniem (<code>Persoon 1</code>); origineel versleuteld weggeschreven.</div></div>
       <div class="step"><div class="n">04</div><div class="t">Indexeer</div><div class="d">Alleen tokens de index in.</div></div>
       <div class="step"><div class="n">05</div><div class="t">Zoek &amp; rank</div><div class="d">BM25 + semantisch, over pseudoniemen.</div></div>
     </div>
@@ -232,8 +235,11 @@
 
   <section aria-labelledby="rank-h">
     <h2 id="rank-h"><span class="step-n">1</span>Zoeken &amp; rangschikken</h2>
-    <p class="sub">Zoek door het corpus. De ranking draait volledig over pseudoniemen — resultaten en snippets
-    bevatten geen klare PII. Kies een resultaat om het te openen.</p>
+    <p class="sub">Zoek door het corpus. De ranking draait volledig over de <b>gepseudonimiseerde index</b> —
+    resultaten, scores en snippets bevatten nooit klare PII. Termen matchen op de niet-PII-tekst (BM25 +
+    semantisch); en omdat gelijke gegevens hetzelfde pseudoniem krijgen, kun je zelfs op een pseudoniem
+    filteren — <i>Locatie 1</i> is in meerdere documenten dezelfde plaats, zónder dat je die plaats ziet.
+    Kies een resultaat om het te openen.</p>
     <div class="searchbar">
       <input id="q" type="text" placeholder="Zoek in het corpus…" aria-label="Zoekterm" autocomplete="off">
     </div>
@@ -494,6 +500,10 @@
       </div>
 
       <div class="rabbit">
+        <div class="sovereign card">
+          <p class="eyebrow">Waarom dit soeverein is</p>
+          <p>De <b>eigenaar van de data houdt de sleutels</b> — niet de cloud, niet de leverancier. De sleutel-encryptiesleutel (KEK) leeft in OpenBao op eigen infrastructuur en verlaat die nooit. Zonder die sleutel is de koppeling tussen pseudoniem en persoon wiskundig niet te openen — geen externe partij, en Wordsworth zélf ook niet, kan heridentificeren. Onthullen is een bewuste, geautoriseerde daad van de eigenaar, geen standaardtoegang.</p>
+        </div>
         <div class="guarantee card">
           <p class="eyebrow">De harde garantie</p>
           <p>Klare persoonsgegevens bereiken <b>nooit</b> de index, de logs, het audit-spoor, een export of een reveal-respons zonder grant. Eén invariant, overal afgedwongen — kan een stap 'm niet garanderen, dan faalt die stap dicht in plaats van te lekken.</p>
@@ -581,7 +591,12 @@
     let s=0; for(const t of terms){ if(!t) continue; let i=hay.indexOf(t); while(i>=0){ s+= (t.length>=4?2.4:1.3); i=hay.indexOf(t,i+t.length); } }
     return s;
   }
-  function tokLabel(seg){ return "["+seg.t+":"+seg.h+"]"; }
+  // Voor de gebruiker: leesbare pseudoniemen (Persoon 1, Persoon 2, …) i.p.v. hashes.
+  // Stabiel én globaal — gelijke waarde (zelfde hash) krijgt hetzelfde label door het hele corpus.
+  const TYPE_FRIENDLY={PERSON:"Persoon",BSN:"BSN",EMAIL:"E-mail",PHONE_NUMBER:"Telefoon",LOCATION:"Locatie",DATE_TIME:"Datum",ORGANIZATION:"Organisatie"};
+  const TOK_LABEL={};
+  (function(){ const c={}; for(const d of CORPUS){ for(const s of d.seg){ if(s&&s.t){ const key=s.t+":"+s.h; if(!(key in TOK_LABEL)){ c[s.t]=(c[s.t]||0)+1; TOK_LABEL[key]=TYPE_FRIENDLY[s.t]+" "+c[s.t]; } } } } })();
+  function tokLabel(seg){ return TOK_LABEL[seg.t+":"+seg.h] || (TYPE_FRIENDLY[seg.t]||seg.t); }
   function plainSnippet(doc){ // index-form one-liner, tokens shown as tokens
     let out=""; for(const s of doc.seg){ if(typeof s==="string") out+=s.replace(/\n/g," "); else if(s.f) out+=s.f; else out+=tokLabel(s); }
     return out.replace(/\s+/g," ").trim();
@@ -703,11 +718,11 @@
     var line=$("hero-line"); if(!line) return;
     var PARTS=[
       {t:"Op 12 maart meldde "},
-      {clear:"Jan Jansen", tok:"[PERSON:9f3a1c02]"},
+      {clear:"Jan Jansen", tok:"Persoon 1"},
       {t:" (BSN "},
-      {clear:"111222333", tok:"[BSN:5b7e0d41]"},
+      {clear:"111222333", tok:"BSN 1"},
       {t:") via "},
-      {clear:"j.jansen@zuiderdorp.nl", tok:"[EMAIL:2c8be6f7]"},
+      {clear:"j.jansen@zuiderdorp.nl", tok:"E-mail 1"},
       {t:" bezwaar bij de gemeente Zuiderdorp."}
     ];
     var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
