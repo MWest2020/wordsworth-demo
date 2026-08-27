@@ -72,6 +72,40 @@
   .tabpanel:focus{outline:none}
   .tabpanel > section:first-child{margin-top:clamp(30px,5vw,52px)}
 
+  /* --- Hero: visitekaartje --- */
+  .hero .cta-row{display:flex;flex-wrap:wrap;gap:12px;margin-top:26px}
+  .btn{font:inherit;font-weight:600;font-size:.95rem;padding:12px 20px;border-radius:10px;cursor:pointer;border:1px solid transparent;transition:transform .12s, box-shadow .15s, background .15s, border-color .15s, color .15s}
+  .btn:active{transform:translateY(1px)}
+  .btn:focus-visible{outline:2px solid var(--brass);outline-offset:2px}
+  .btn-primary{background:var(--indigo);color:var(--surface);box-shadow:var(--shadow)}
+  .btn-primary:hover{background:var(--indigo-soft)}
+  .btn-ghost{background:transparent;color:var(--ink);border-color:var(--line)}
+  .btn-ghost:hover{border-color:var(--brass);color:var(--brass-deep)}
+  .hero-demo{margin-top:28px}
+  .hero-line{font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:.9rem;line-height:2.1;padding:16px 18px 6px;margin:0;white-space:pre-wrap;word-break:break-word}
+  .htok{border-radius:5px;padding:1px 5px;transition:background .45s ease, color .45s ease, box-shadow .45s ease}
+  .htok.clear{color:var(--ink);box-shadow:inset 0 -2px 0 var(--reveal-line)}
+  .htok.flash{background:var(--reveal-bg);color:var(--reveal-ink);box-shadow:none}
+  .htok.redacted{background:var(--token-bg);color:var(--token-ink);box-shadow:none}
+  @media (prefers-reduced-motion:reduce){.htok{transition:none}}
+  .replay{font-family:"IBM Plex Mono",monospace;font-size:.72rem;color:var(--muted);background:none;border:0;cursor:pointer;padding:2px 18px 14px}
+  .replay:hover{color:var(--brass-deep)}
+  .replay:focus-visible{outline:2px solid var(--brass);outline-offset:2px;border-radius:4px}
+  .trust{display:flex;flex-wrap:wrap;gap:8px 20px;list-style:none;padding:0;margin:24px 0 0}
+  .trust li{font-family:"IBM Plex Mono",monospace;font-size:.72rem;color:var(--faint);position:relative;padding-left:15px}
+  .trust li::before{content:"\25C7";position:absolute;left:0;color:var(--brass)}
+
+  /* --- Rabbit hole: dieper in de architectuur --- */
+  .rabbit{display:flex;flex-direction:column;gap:16px;margin-top:1.6rem}
+  .guarantee{padding:18px 20px}
+  .guarantee .eyebrow{margin:0 0 8px}
+  .guarantee p:last-child{margin:0;max-width:64ch}
+  .stack h3{font-family:"Spectral",Georgia,serif;font-weight:600;font-size:1.12rem;margin:0 0 .5rem}
+  .stack ul{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:8px}
+  .stack li{font-size:.88rem;color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 13px}
+  .stack li b{color:var(--ink);font-weight:600}
+  .deeper{color:var(--faint);font-size:.86rem;font-style:italic;margin:4px 0 0}
+
 
   .flow{display:flex; flex-wrap:wrap; gap:8px}
   .step{flex:1 1 130px; background:var(--surface); border:1px solid var(--line); border-radius:10px; padding:13px 15px}
@@ -155,12 +189,26 @@
 </head>
 <body>
 <div class="wrap">
-  <header>
-    <p class="eyebrow">Soevereine PII-pijplijn · Woo-documenten</p>
+  <header class="hero">
+    <p class="eyebrow">Soevereine PII-straat · Woo / open overheid</p>
     <h1>Doorzoekbaar zonder<br>de <span class="mark">privacy</span> prijs te geven.</h1>
-    <p class="lede">Wordsworth maakt van overheidsdocumenten een doorzoekbaar corpus waarin
-    <b>nooit klare persoonsgegevens</b> in de index staan. Zoeken gebeurt over pseudoniemen; onthullen
-    kan achteraf — <b>per afdeling</b>, met een eigen sleutelbos, intrekbaar en geaudit.</p>
+    <p class="lede">Wordsworth leest overheidsdocumenten, <b>pseudonimiseert elk persoonsgegeven</b>
+    vóór indexering, en laat je er vrij in zoeken. Onthullen kan achteraf — <b>per afdeling</b>,
+    met een eigen sleutelbos, intrekbaar en geaudit.</p>
+
+    <div class="hero-demo card">
+      <div class="panel-head"><span class="dot"></span><h3>Live · pseudonimisatie</h3><span class="badge" id="hero-state">klaartekst</span></div>
+      <p class="hero-line" id="hero-line"></p>
+      <button class="replay" id="hero-replay" type="button">↻ opnieuw afspelen</button>
+    </div>
+
+    <div class="cta-row">
+      <button class="btn btn-primary" id="cta-demo" type="button">Probeer het zelf ↓</button>
+      <button class="btn btn-ghost" id="cta-arch" type="button">Down the rabbit hole →</button>
+    </div>
+    <ul class="trust">
+      <li>on-prem</li><li>geen cloud in het pad</li><li>hash-chained audit</li><li>EUPL-1.2</li>
+    </ul>
   </header>
 
   <nav class="tabs" role="tablist" aria-label="Weergave">
@@ -240,7 +288,7 @@
   <div class="tabpanel" id="tab-arch" role="tabpanel" aria-labelledby="t-arch" tabindex="0" hidden>
     <section aria-labelledby="arch-h">
       <h2 id="arch-h">Architectuur</h2>
-      <p class="sub">Hoe de straat en het soevereine sleutelbeheer in elkaar zitten — van ingest tot OpenBao.</p>
+      <p class="sub"><b>Down the rabbit hole.</b> Hoe de straat en het soevereine sleutelbeheer écht in elkaar zitten — van ingest tot OpenBao.</p>
       <style>
         /* Alles scoped onder .wsarch zodat niets naar de rest van de pagina lekt.
            Kleuren uitsluitend via bestaande tokens (theme-aware); geen eigen palet. */
@@ -444,6 +492,24 @@
         </div>
 
       </div>
+
+      <div class="rabbit">
+        <div class="guarantee card">
+          <p class="eyebrow">De harde garantie</p>
+          <p>Klare persoonsgegevens bereiken <b>nooit</b> de index, de logs, het audit-spoor, een export of een reveal-respons zonder grant. Eén invariant, overal afgedwongen — kan een stap 'm niet garanderen, dan faalt die stap dicht in plaats van te lekken.</p>
+        </div>
+        <div class="stack">
+          <h3>De onderdelen</h3>
+          <ul>
+            <li><b>OpenAnonymiser · GLiNER</b> — herkent PII in Nederlandse tekst</li>
+            <li><b>OpenSearch</b> — index &amp; zoeken over pseudoniemen</li>
+            <li><b>OpenBao · Transit</b> — envelope-sleutelbeheer, KEK blijft binnen</li>
+            <li><b>Postgres</b> — hash-chained audit + versleutelde mappings</li>
+            <li><b>ArgoCD</b> — GitOps-deploy op het homelab-cluster</li>
+          </ul>
+        </div>
+        <p class="deeper">Nog dieper? Code, ADR's en invarianten zijn open — EUPL-1.2, open tooling, geen cloud in het kritieke pad.</p>
+      </div>
     </section>
   </div><!-- /tab-arch -->
 
@@ -630,6 +696,49 @@
       });
     });
     if(location.hash==="#arch") select("t-arch");
+  })();
+
+  // --- Hero: live pseudonimisatie (visitekaartje) ---
+  (function(){
+    var line=$("hero-line"); if(!line) return;
+    var PARTS=[
+      {t:"Op 12 maart meldde "},
+      {clear:"Jan Jansen", tok:"[PERSON:9f3a1c02]"},
+      {t:" (BSN "},
+      {clear:"111222333", tok:"[BSN:5b7e0d41]"},
+      {t:") via "},
+      {clear:"j.jansen@zuiderdorp.nl", tok:"[EMAIL:2c8be6f7]"},
+      {t:" bezwaar bij de gemeente Zuiderdorp."}
+    ];
+    var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    var toks=[];
+    PARTS.forEach(function(p){
+      if(p.t){ line.appendChild(document.createTextNode(p.t)); return; }
+      var s=document.createElement("span"); s.className="htok clear";
+      s.textContent=p.clear; s.dataset.clear=p.clear; s.dataset.tok=p.tok;
+      line.appendChild(s); toks.push(s);
+    });
+    var state=$("hero-state"), replay=$("hero-replay");
+    function play(){
+      if(reduce){
+        toks.forEach(function(s){ s.className="htok redacted"; s.textContent=s.dataset.tok; });
+        if(state) state.textContent="gepseudonimiseerd"; return;
+      }
+      toks.forEach(function(s){ s.className="htok clear"; s.textContent=s.dataset.clear; });
+      if(state) state.textContent="klaartekst";
+      toks.forEach(function(s,i){
+        setTimeout(function(){
+          s.className="htok flash"; s.textContent=s.dataset.tok;
+          setTimeout(function(){ s.className="htok redacted"; }, 360);
+          if(i===toks.length-1 && state) state.textContent="gepseudonimiseerd";
+        }, 800 + i*480);
+      });
+    }
+    if(replay) replay.addEventListener("click", play);
+    play();
+    var cd=$("cta-demo"), ca=$("cta-arch");
+    if(cd) cd.addEventListener("click", function(){ $("t-demo").click(); var el=document.querySelector(".tabs"); if(el) el.scrollIntoView({behavior:"smooth",block:"start"}); });
+    if(ca) ca.addEventListener("click", function(){ $("t-arch").click(); window.scrollTo({top:0,behavior:"smooth"}); });
   })();
 })();
 </script>
