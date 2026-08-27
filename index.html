@@ -62,6 +62,23 @@
   h2 .step-n{font-family:"IBM Plex Mono",monospace; font-size:.85rem; color:var(--brass); font-weight:500; margin-right:10px; vertical-align:.12em}
   .sub{color:var(--muted); margin:0 0 22px; max-width:66ch}
 
+  .tabs{display:flex; gap:4px; margin-top:clamp(26px,4vw,40px); border-bottom:1px solid var(--line)}
+  .tab{font:inherit; font-weight:600; font-size:.92rem; letter-spacing:.01em; color:var(--muted);
+    background:none; border:0; border-bottom:2px solid transparent; padding:10px 14px; margin-bottom:-1px; cursor:pointer; transition:color .15s, border-color .15s}
+  .tab:hover{color:var(--ink)}
+  .tab[aria-selected="true"]{color:var(--ink); border-bottom-color:var(--brass)}
+  .tab:focus-visible{outline:2px solid var(--brass); outline-offset:3px; border-radius:3px}
+  .tabpanel[hidden]{display:none}
+  .tabpanel:focus{outline:none}
+  .tabpanel > section:first-child{margin-top:clamp(30px,5vw,52px)}
+
+  .arch-soon{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow); padding:clamp(24px,5vw,40px); text-align:center}
+  .arch-soon .badge{display:inline-block; font-family:"IBM Plex Mono",monospace; font-size:.7rem; letter-spacing:.08em; text-transform:uppercase; color:var(--brass-deep); background:var(--reveal-bg); border:1px solid var(--reveal-line); border-radius:999px; padding:4px 12px; margin-bottom:16px}
+  .arch-soon h3{font-family:"Spectral",Georgia,serif; font-weight:600; font-size:1.4rem; margin:0 0 8px}
+  .arch-soon p{color:var(--muted); max-width:56ch; margin:0 auto 6px; font-size:.95rem}
+  .arch-soon .mini{display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin-top:20px}
+  .arch-soon .mini span{font-family:"IBM Plex Mono",monospace; font-size:.72rem; color:var(--muted); border:1px dashed var(--line); border-radius:8px; padding:6px 11px}
+
   .flow{display:flex; flex-wrap:wrap; gap:8px}
   .step{flex:1 1 130px; background:var(--surface); border:1px solid var(--line); border-radius:10px; padding:13px 15px}
   .step .n{font-family:"IBM Plex Mono",monospace; font-size:.7rem; color:var(--faint)}
@@ -152,6 +169,13 @@
     kan achteraf — <b>per afdeling</b>, met een eigen sleutelbos, intrekbaar en geaudit.</p>
   </header>
 
+  <nav class="tabs" role="tablist" aria-label="Weergave">
+    <button class="tab" id="t-demo" role="tab" aria-selected="true" aria-controls="tab-demo">Demo</button>
+    <button class="tab" id="t-arch" role="tab" aria-selected="false" aria-controls="tab-arch">Architectuur</button>
+  </nav>
+
+  <div class="tabpanel" id="tab-demo" role="tabpanel" aria-labelledby="t-demo" tabindex="0">
+
   <section aria-labelledby="flow-h">
     <h2 id="flow-h">De straat</h2>
     <p class="sub">Elk document loopt één kant op. Alleen de gepseudonimiseerde vorm bereikt de index.</p>
@@ -216,6 +240,22 @@
       <div class="prop"><p class="h"><span class="i">◆</span>Geen cloud in het pad</p><p>Anonimiseren, sleutels en index draaien on-prem. EUPL-1.2, open tooling.</p></div>
     </div>
   </section>
+
+  </div><!-- /tab-demo -->
+
+  <div class="tabpanel" id="tab-arch" role="tabpanel" aria-labelledby="t-arch" tabindex="0" hidden>
+    <section aria-labelledby="arch-h">
+      <h2 id="arch-h">Architectuur</h2>
+      <p class="sub">Hoe de straat en het soevereine sleutelbeheer in elkaar zitten — van ingest tot OpenBao.</p>
+      <div class="arch-soon">
+        <span class="badge">In samenwerking · komt hier</span>
+        <h3>Architectuurweergave in aanbouw</h3>
+        <p>Deze weergave — de componenten van de straat, de GitOps-deploy en het OpenBao-sleutelpad —
+        wordt door een aparte agent gebouwd en verschijnt straks in dit tabblad.</p>
+        <div class="mini"><span>ingest → extract</span><span>pseudonimiseer 🔑</span><span>index + zoek</span><span>OpenBao Transit</span><span>grants + reveal</span><span>hash-chained audit</span></div>
+      </div>
+    </section>
+  </div><!-- /tab-arch -->
 
   <footer>
     <span><b>Wordsworth</b> · soevereine PII-straat</span>
@@ -376,7 +416,33 @@
   $("q").addEventListener("input",e=>renderResults(e.target.value));
 
   renderResults(""); renderDoc();
+
+  // --- Tabs: Demo | Architectuur ---
+  (function(){
+    var tabs=[$("t-demo"),$("t-arch")], panels={ "t-demo":$("tab-demo"), "t-arch":$("tab-arch") };
+    function select(id){
+      tabs.forEach(function(t){
+        var on=t.id===id;
+        t.setAttribute("aria-selected", on?"true":"false");
+        t.tabIndex = on?0:-1;
+        panels[t.id].hidden = !on;
+      });
+      if(location.hash!=="#"+id) history.replaceState(null,"",id==="t-demo"?location.pathname:"#arch");
+    }
+    tabs.forEach(function(t){
+      t.addEventListener("click",function(){ select(t.id); });
+      t.addEventListener("keydown",function(e){
+        if(e.key==="ArrowRight"||e.key==="ArrowLeft"){
+          e.preventDefault();
+          var i=tabs.indexOf(t), n=(i+(e.key==="ArrowRight"?1:tabs.length-1))%tabs.length;
+          tabs[n].focus(); select(tabs[n].id);
+        }
+      });
+    });
+    if(location.hash==="#arch") select("t-arch");
+  })();
 })();
 </script>
+
 </body>
 </html>
